@@ -42,6 +42,7 @@ class _MortgageCalculatorState extends State<MortgageCalculator> {
 
   int _selectedyear = 10;
 
+  // Calculate mortgage
   void _calculateMortgage() {
     double price = double.tryParse(_priceController.text) ?? 0;
     double rate = double.tryParse(_rateController.text) ?? 0;
@@ -49,7 +50,7 @@ class _MortgageCalculatorState extends State<MortgageCalculator> {
     double monthly = monthlyPayment(price, rate, _selectedyear);
     double total = monthly * (_selectedyear * 12);
 
-    final InputInfo finalcalc = InputInfo(price, rate / 100, _selectedyear, total, monthly,);
+    final InputInfo finalcalc = InputInfo(price, rate / 100, _selectedyear, total, monthly);
 
     Navigator.push(context, MaterialPageRoute(builder: (context) => CalculationScreen(finalcalc)),); // Pass results to next screen
   }
@@ -74,6 +75,7 @@ class _MortgageCalculatorState extends State<MortgageCalculator> {
               decoration: InputDecoration(labelText: 'Interest Rate %'),
             ),
           ),
+          // Radio Group for mutually exclusive RadioButtons
           RadioGroup<int>(
             groupValue: _selectedyear,
             onChanged: (val) => setState(() => _selectedyear = val!),
@@ -94,6 +96,37 @@ class _MortgageCalculatorState extends State<MortgageCalculator> {
                 ],
               ),
             )
+          ),
+          // Terms and Conditions Checkbox
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Checkbox(
+                value: false,
+                onChanged: (bool? value) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Terms and Conditions'),
+                        content: const Text('Please confirm you agree to the terms.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(), // We tried getting the checkbox to show and we had it working on DartPad but not on VSCode
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+              const Text('Terms and Conditions'),
+            ],
           ),
           ElevatedButton(
             onPressed: _calculateMortgage,
